@@ -2,6 +2,8 @@
 
 For details, see:
 http://www.cs.nyu.edu/~gwtaylor/publications/nips2006mhmublv
+Sample data:
+http://www.cs.nyu.edu/~gwtaylor/publications/nips2006mhmublv/motion.mat
 
 @author Graham Taylor"""
 

@@ -1,8 +1,8 @@
 """ Mocap data
-See: http://www.cs.nyu.edu/~gwtaylor/publications/nips2006mhmublv/code.html
+See: http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/code.html
 
 Download:
-http://www.cs.nyu.edu/~gwtaylor/publications/nips2006mhmublv/motion.mat
+http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/motion.mat
 Place in ../data
 
 Data originally from Eugene Hsu, MIT.

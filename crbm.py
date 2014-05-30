@@ -448,7 +448,7 @@ def cost_plot(mean_cost):
     plt.plot(mean_cost, ',')
     plt.xlabel('epoch')
     plt.ylabel('mean cost')
-    plt.savefig('cost.svg')
+    plt.savefig('cost.png')
 
 def plot(data_idx, bd, generated_series):
     import pylab as plt
@@ -467,7 +467,7 @@ def plot(data_idx, bd, generated_series):
     ltext = leg.get_texts()  # all the text.Text instance in the legend
     plt.setp(ltext, fontsize=9)
 
-    plt.savefig('result.svg')
+    plt.savefig('result.png')
 
 if __name__ == '__main__':
     crbm, batchdata = train_crbm()

@@ -9,7 +9,6 @@ http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/motion.mat
 
 import numpy
 import numpy as np
-import matplotlib.pyplot as plt
 import time
 
 import theano
@@ -301,7 +300,7 @@ class CRBM(object):
         #persistent_history = T.matrix('persistent_history')
 
         [presig_hids, hid_mfs, hid_samples, vis_mfs, vis_samples], updates =  \
-                            theano.scan(crbm.gibbs_vhv,
+                            theano.scan(self.gibbs_vhv,
                                     outputs_info=[None, None, None, None,
                                                     persistent_vis_chain],
                                     non_sequences=persistent_history,
@@ -311,12 +310,12 @@ class CRBM(object):
         # chain
         # initialize next visible with current visible
         # shift the history one step forward
-        updates.update({persistent_vis_chain: vis_samples[-1],
-                         persistent_history: T.concatenate(
+        updates[persistent_vis_chain] = vis_samples[-1]
+        updates[persistent_history] = T.concatenate(
                              (vis_samples[-1],
                                  persistent_history[:, :(self.delay - 1) * \
                                                     self.n_visible],
-                              ), axis=1)})
+                              ), axis=1)
         # construct the function that implements our persistent chain.
         # we generate the "mean field" activations for plotting and the actual
         # samples for reinitializing the state of our persistent chain
@@ -408,6 +407,7 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
     plotting_time = 0.
     start_time = time.clock()
 
+    mean_cost_list = []
     # go through training epochs
     for epoch in xrange(training_epochs):
 
@@ -431,7 +431,9 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
             mean_cost += [this_cost]
 
         print 'Training epoch %d, cost is ' % epoch, numpy.mean(mean_cost)
+        mean_cost_list.append(numpy.mean(mean_cost))
 
+    cost_plot(mean_cost_list)
     end_time = time.clock()
 
     pretraining_time = (end_time - start_time)
@@ -440,6 +442,32 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
 
     return crbm, batchdata
 
+def cost_plot(mean_cost):
+    import pylab as plt
+
+    plt.plot(mean_cost, ',')
+    plt.xlabel('epoch')
+    plt.ylabel('mean cost')
+    plt.savefig('cost.svg')
+
+def plot(data_idx, bd, generated_series):
+    import pylab as plt
+
+    # plot first dimension of each sequence
+    for i in xrange(len(generated_series)):
+        # original
+        start = data_idx[i]
+        plt.subplot(len(generated_series), 1, i+1)
+        plt.plot(bd[start - crbm.delay:start + 100 - crbm.delay, 1],
+                 label='true', linestyle=':')
+        plt.plot(generated_series[i, :100, 1], label='predicted',
+                 linestyle='-')
+
+    leg = plt.legend()
+    ltext = leg.get_texts()  # all the text.Text instance in the legend
+    plt.setp(ltext, fontsize=9)
+
+    plt.savefig('result.svg')
 
 if __name__ == '__main__':
     crbm, batchdata = train_crbm()
@@ -471,16 +499,4 @@ if __name__ == '__main__':
 
     bd = batchdata.get_value(borrow=True)
 
-    # plot first dimension of each sequence
-    for i in xrange(len(generated_series)):
-        # original
-        start = data_idx[i]
-        plt.subplot(len(generated_series), 1, i)
-        plt.plot(bd[start - crbm.delay:start + 100 - crbm.delay, 1],
-                 label='true', linestyle=':')
-        plt.plot(generated_series[i, :100, 1], label='predicted',
-                 linestyle='-')
-
-    leg = plt.legend()
-    ltext = leg.get_texts()  # all the text.Text instance in the legend
-    plt.setp(ltext, fontsize=9)
+    plot(data_idx, bd, generated_series)

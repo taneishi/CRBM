@@ -358,7 +358,7 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
     batchdata, seqlen, data_mean, data_std = load_data(dataset)
 
     # compute number of minibatches for training, validation and testing
-    n_train_batches = batchdata.get_value(borrow=True).shape[0] / batch_size
+    n_train_batches = (batchdata.get_value(borrow=True).shape[0] / delay * len(seqlen)) / batch_size
     n_dim = batchdata.get_value(borrow=True).shape[1]
 
     # valid starting indices
@@ -430,8 +430,8 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
             #print batch_index, this_cost
             mean_cost += [this_cost]
 
-        print 'Training epoch %d, cost is ' % epoch, numpy.mean(mean_cost)
         mean_cost_list.append(numpy.mean(mean_cost))
+        print 'Training epoch %d, cost is ' % epoch, mean_cost_list[-1]
 
     cost_plot(mean_cost_list)
     end_time = time.clock()
@@ -453,14 +453,15 @@ def cost_plot(mean_cost):
 def plot(data_idx, bd, generated_series):
     import pylab as plt
 
+    n_samples = generated_series[0].shape[0] - crbm.delay
     # plot first dimension of each sequence
     for i in xrange(len(generated_series)):
         # original
         start = data_idx[i]
         plt.subplot(len(generated_series), 1, i+1)
-        plt.plot(bd[start - crbm.delay:start + 100 - crbm.delay, 1],
+        plt.plot(bd[start - crbm.delay:start + n_samples - crbm.delay, 1],
                  label='true', linestyle=':')
-        plt.plot(generated_series[i, :100, 1], label='predicted',
+        plt.plot(generated_series[i, :n_samples, 1], label='predicted',
                  linestyle='-')
 
     leg = plt.legend()

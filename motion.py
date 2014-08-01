@@ -3,7 +3,7 @@ See: http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/code.html
 
 Download:
 http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/motion.mat
-Place in ../data
+Place in ./data
 
 Data originally from Eugene Hsu, MIT.
 http://people.csail.mit.edu/ehsu/work/sig05stf/
@@ -89,4 +89,4 @@ def load_data(filename):
     return shared_x, seqlen, data_mean, data_std
 
 if __name__ == "__main__":
-    batchdata, seqlen, data_mean, data_std = load_data('../data/motion.mat')
+    batchdata, seqlen, data_mean, data_std = load_data('./data/motion.mat')

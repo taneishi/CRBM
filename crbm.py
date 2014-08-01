@@ -335,7 +335,7 @@ class CRBM(object):
 
 
 def train_crbm(learning_rate=1e-3, training_epochs=300,
-             dataset='../data/motion.mat', batch_size=100,
+             dataset='./data/motion.mat', batch_size=100,
              n_hidden=100, delay=6):
     """
     Demonstrate how to train a CRBM.
@@ -463,11 +463,13 @@ def plot(data_idx, bd, generated_series):
                  label='true', linestyle=':')
         plt.plot(generated_series[i, :n_samples, 1], label='predicted',
                  linestyle='-')
+        plt.yticks(fontsize=9)
 
     leg = plt.legend()
     ltext = leg.get_texts()  # all the text.Text instance in the legend
     plt.setp(ltext, fontsize=9)
 
+    plt.tight_layout()
     plt.savefig('result.png')
 
 if __name__ == '__main__':

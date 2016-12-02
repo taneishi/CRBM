@@ -7,6 +7,7 @@ http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/motion.mat
 
 @author Graham Taylor"""
 
+from __future__ import print_function
 import numpy
 import numpy as np
 import time
@@ -327,8 +328,8 @@ class CRBM(object):
         #print orig_data[:,1:5]
         #print vis_mf[:,1:5]
         generated_series = np.empty((n_seq, n_samples, self.n_visible))
-        for t in xrange(n_samples):
-            print "Generating frame %d" % t
+        for t in range(n_samples):
+            print("Generating frame %d" % t)
             vis_mf, vis_sample = sample_fn()
             generated_series[:, t, :] = vis_mf
         return generated_series
@@ -365,7 +366,7 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
     batchdataindex = []
     last = 0
     for s in seqlen:
-        batchdataindex += range(last + delay, last + s)
+        batchdataindex += list(range(last + delay, last + s))
         last += s
 
     permindex = np.array(batchdataindex)
@@ -409,11 +410,11 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
 
     mean_cost_list = []
     # go through training epochs
-    for epoch in xrange(training_epochs):
+    for epoch in range(training_epochs):
 
         # go through the training set
         mean_cost = []
-        for batch_index in xrange(n_train_batches):
+        for batch_index in range(int(n_train_batches)):
 
             # indexing is slightly complicated
             # build a linear index to the starting frames for this batch
@@ -424,21 +425,21 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
             # now build a linear index to the frames at each delay tap
             # (i.e. time t-1 to t-delay)
             # gives a batch_size x delay array of indices for history
-            hist_idx = np.array([data_idx - n for n in xrange(1, delay + 1)]).T
+            hist_idx = np.array([data_idx - n for n in range(1, delay + 1)]).T
 
             this_cost = train_crbm(data_idx, hist_idx.ravel())
             #print batch_index, this_cost
             mean_cost += [this_cost]
 
         mean_cost_list.append(numpy.mean(mean_cost))
-        print 'Training epoch %d, cost is ' % epoch, mean_cost_list[-1]
+        print('Training epoch %d, cost is ' % epoch, mean_cost_list[-1])
 
     cost_plot(mean_cost_list)
     end_time = time.clock()
 
     pretraining_time = (end_time - start_time)
 
-    print ('Training took %f minutes' % (pretraining_time / 60.))
+    print(('Training took %f minutes' % (pretraining_time / 60.)))
 
     return crbm, batchdata
 
@@ -455,7 +456,7 @@ def plot(data_idx, bd, generated_series):
 
     n_samples = generated_series[0].shape[0] - crbm.delay
     # plot first dimension of each sequence
-    for i in xrange(len(generated_series)):
+    for i in range(len(generated_series)):
         # original
         start = data_idx[i]
         plt.subplot(len(generated_series), 1, i+1)
@@ -483,7 +484,7 @@ if __name__ == '__main__':
     orig_data = numpy.asarray(batchdata.get_value(borrow=True)[data_idx],
                               dtype=theano.config.floatX)
 
-    hist_idx = np.array([data_idx - n for n in xrange(1, crbm.delay + 1)]).T
+    hist_idx = np.array([data_idx - n for n in range(1, crbm.delay + 1)]).T
     hist_idx = hist_idx.ravel()
 
     orig_history = numpy.asarray(

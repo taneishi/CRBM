@@ -1,4 +1,5 @@
-""" Mocap data
+'''
+Mocap data
 See: http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/code.html
 
 Download:
@@ -9,7 +10,7 @@ Data originally from Eugene Hsu, MIT.
 http://people.csail.mit.edu/ehsu/work/sig05stf/
 
 @author Graham Taylor
-"""
+'''
 
 import scipy.io
 import numpy as np

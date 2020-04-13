@@ -1,16 +1,15 @@
-""" Theano CRBM implementation.
+''' Theano CRBM implementation.
 
 For details, see:
 http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv
 Sample data:
 http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/motion.mat
 
-@author Graham Taylor"""
+@author Graham Taylor'''
 
-from __future__ import print_function
 import numpy
 import numpy as np
-import time
+import timeit
 
 import theano
 import theano.tensor as T
@@ -21,12 +20,12 @@ from motion import load_data
 
 
 class CRBM(object):
-    """Conditional Restricted Boltzmann Machine (CRBM)  """
+    '''Conditional Restricted Boltzmann Machine (CRBM)  '''
     def __init__(self, input=None, input_history=None, n_visible=49,
                  n_hidden=500, delay=6, A=None, B=None, W=None, hbias=None,
                  vbias=None, numpy_rng=None,
                  theano_rng=None):
-        """
+        '''
         CRBM constructor. Defines the parameters of the model along with
         basic operations for inferring hidden from visible (and vice-versa),
         as well as for performing CD updates.
@@ -56,7 +55,7 @@ class CRBM(object):
 
         :param vbias: None for standalone RBMs or a symbolic variable
         pointing to a shared visible units bias
-        """
+        '''
 
         self.n_visible = n_visible
         self.n_hidden = n_hidden
@@ -210,7 +209,7 @@ class CRBM(object):
         return [pre_sigmoid_h1, h1_mean, h1_sample, v1_mean, v1_sample]
 
     def get_cost_updates(self, lr=0.1, k=1):
-        """
+        '''
         This functions implements one step of CD-k
 
         :param lr: learning rate used to train the RBM
@@ -223,7 +222,7 @@ class CRBM(object):
         dictionary contains the update rules for weights and biases but
         also an update of the shared variable used to store the persistent
         chain, if one is used.
-        """
+        '''
 
         # compute positive phase
         pre_sigmoid_ph, ph_mean, ph_sample = \
@@ -275,15 +274,15 @@ class CRBM(object):
         return monitoring_cost, updates
 
     def get_reconstruction_cost(self, updates, pre_sigmoid_nv):
-        """Approximation to the reconstruction error
-        """
+        '''Approximation to the reconstruction error
+        '''
         # sum over dimensions, mean over cases
         recon = T.mean(T.sum(T.sqr(self.input - pre_sigmoid_nv), axis=1))
 
         return recon
 
     def generate(self, orig_data, orig_history, n_samples, n_gibbs=30):
-        """ Given initialization(s) of visibles and matching history, generate
+        ''' Given initialization(s) of visibles and matching history, generate
         n_samples in future.
 
         orig_data : n_seq by n_visibles array
@@ -293,7 +292,7 @@ class CRBM(object):
         n_samples : int
             number of samples to generate forward
         n_gibbs : int
-            number of alternating Gibbs steps per iteration"""
+            number of alternating Gibbs steps per iteration'''
         n_seq = orig_data.shape[0]
         persistent_vis_chain = theano.shared(orig_data)
         persistent_history = theano.shared(orig_history)
@@ -318,7 +317,7 @@ class CRBM(object):
                                                     self.n_visible],
                               ), axis=1)
         # construct the function that implements our persistent chain.
-        # we generate the "mean field" activations for plotting and the actual
+        # we generate the 'mean field' activations for plotting and the actual
         # samples for reinitializing the state of our persistent chain
         sample_fn = theano.function([], [vis_mfs[-1], vis_samples[-1]],
                             updates=updates,
@@ -328,17 +327,18 @@ class CRBM(object):
         #print orig_data[:,1:5]
         #print vis_mf[:,1:5]
         generated_series = np.empty((n_seq, n_samples, self.n_visible))
-        for t in range(n_samples):
-            print("Generating frame %d" % t)
+        for t in range(0, n_samples):
+            print('\rGenerating frame %03d' % t, end='')
             vis_mf, vis_sample = sample_fn()
             generated_series[:, t, :] = vis_mf
+        print('')
         return generated_series
 
 
 def train_crbm(learning_rate=1e-3, training_epochs=300,
              dataset='./data/motion.mat', batch_size=100,
              n_hidden=100, delay=6):
-    """
+    '''
     Demonstrate how to train a CRBM.
     This is demonstrated on mocap data.
 
@@ -350,7 +350,7 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
 
     :param batch_size: size of a batch used to train the RBM
 
-    """
+    '''
 
     rng = numpy.random.RandomState(123)
     theano_rng = RandomStreams(rng.randint(2 ** 30))
@@ -406,11 +406,11 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
            name='train_crbm')
 
     plotting_time = 0.
-    start_time = time.clock()
+    start_time = timeit.default_timer()
 
     mean_cost_list = []
     # go through training epochs
-    for epoch in range(training_epochs):
+    for epoch in range(1, training_epochs+1):
 
         # go through the training set
         mean_cost = []
@@ -432,27 +432,30 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
             mean_cost += [this_cost]
 
         mean_cost_list.append(numpy.mean(mean_cost))
-        print('Training epoch %d, cost is ' % epoch, mean_cost_list[-1])
+        print('\rTraining epoch %03d, cost is %8.5f' % (epoch, mean_cost_list[-1]), end='')
+        if epoch % 50 == 0:
+            print('')
 
     cost_plot(mean_cost_list)
-    end_time = time.clock()
+    end_time = timeit.default_timer()
 
     pretraining_time = (end_time - start_time)
 
-    print(('Training took %f minutes' % (pretraining_time / 60.)))
+    print(('Training took %f seconds' % pretraining_time))
 
     return crbm, batchdata
 
 def cost_plot(mean_cost):
-    import pylab as plt
+    import matplotlib.pyplot as plt
 
     plt.plot(mean_cost, ',')
+    plt.grid(True)
     plt.xlabel('epoch')
     plt.ylabel('mean cost')
-    plt.savefig('cost.png')
+    plt.show()
 
 def plot(data_idx, bd, generated_series):
-    import pylab as plt
+    import matplotlib.pyplot as plt
 
     n_samples = generated_series[0].shape[0] - crbm.delay
     # plot first dimension of each sequence
@@ -465,13 +468,14 @@ def plot(data_idx, bd, generated_series):
         plt.plot(generated_series[i, :n_samples, 1], label='predicted',
                  linestyle='-')
         plt.yticks(fontsize=9)
+        plt.grid(True)
 
     leg = plt.legend()
     ltext = leg.get_texts()  # all the text.Text instance in the legend
     plt.setp(ltext, fontsize=9)
 
     plt.tight_layout()
-    plt.savefig('result.png')
+    plt.show()
 
 if __name__ == '__main__':
     crbm, batchdata = train_crbm()

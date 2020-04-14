@@ -326,16 +326,19 @@ class CRBM(object):
         #vis_mf, vis_sample = sample_fn()
         #print orig_data[:,1:5]
         #print vis_mf[:,1:5]
+
+        start_time = timeit.default_timer()
+
         generated_series = np.empty((n_seq, n_samples, self.n_visible))
         for t in range(0, n_samples):
             print('\rGenerating frame %03d' % t, end='')
             vis_mf, vis_sample = sample_fn()
             generated_series[:, t, :] = vis_mf
-        print('')
+        print(', %5.3f sec' % (timeit.default_timer() - start_time))
         return generated_series
 
 
-def train_crbm(learning_rate=1e-3, training_epochs=300,
+def train_crbm(learning_rate=1e-3, training_epochs=500,
              dataset='./data/motion.mat', batch_size=100,
              n_hidden=100, delay=6):
     '''
@@ -433,15 +436,11 @@ def train_crbm(learning_rate=1e-3, training_epochs=300,
 
         mean_cost_list.append(numpy.mean(mean_cost))
         print('\rTraining epoch %03d, cost is %8.5f' % (epoch, mean_cost_list[-1]), end='')
-        if epoch % 50 == 0:
-            print('')
+        if epoch % 100 == 0:
+            print(', %6.3f sec' % (timeit.default_timer() - start_time))
+            start_time = timeit.default_timer()
 
     cost_plot(mean_cost_list)
-    end_time = timeit.default_timer()
-
-    pretraining_time = (end_time - start_time)
-
-    print(('Training took %f seconds' % pretraining_time))
 
     return crbm, batchdata
 
@@ -452,7 +451,7 @@ def cost_plot(mean_cost):
     plt.grid(True)
     plt.xlabel('epoch')
     plt.ylabel('mean cost')
-    plt.show()
+    plt.savefig('cost.png')
 
 def plot(data_idx, bd, generated_series):
     import matplotlib.pyplot as plt
@@ -475,7 +474,7 @@ def plot(data_idx, bd, generated_series):
     plt.setp(ltext, fontsize=9)
 
     plt.tight_layout()
-    plt.show()
+    plt.savefig('prediction.png')
 
 if __name__ == '__main__':
     crbm, batchdata = train_crbm()

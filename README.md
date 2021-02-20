@@ -4,6 +4,8 @@
 
 # Reference
 
+[Original paper](https://www.cs.toronto.edu/~hinton/absps/fcrbm_icml.pdf) by Graham W. Taylor and Geoffrey E. Hinton.
+
 Forked from the [gist code](https://gist.github.com/gwtaylor/2505670) implemented by Graham W. Taylor. 
 
 ## Requirements

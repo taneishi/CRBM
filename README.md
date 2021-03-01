@@ -10,4 +10,5 @@ Forked from the [gist code](https://gist.github.com/gwtaylor/2505670) implemente
 
 ## Requirements
 
-- Theano-1.0.4
+- Theano-1.0.5
+    conda install -c conda-forge theano==1.0.5

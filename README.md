@@ -5,6 +5,7 @@
 # Reference
 
 [Modeling Human MotionUsing Binary Latent Variables](https://www.cs.toronto.edu/~hinton/absps/nipsmocap.pdf) by Graham W. Taylor, Geoffrey E. Hinton and Sam Roweis.
+[Factored Conditional Restricted Boltzmann Machinesfor Modeling Motion Style](https://www.cs.toronto.edu/~hinton/absps/fcrbm_icml.pdf) by Graham W. Taylor and Geoffrey E. Hinton.
 
 Forked from the [gist code](https://gist.github.com/gwtaylor/2505670) implemented by Graham W. Taylor. 
 

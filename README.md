@@ -1,16 +1,16 @@
-# [Conditional Restricted Boltzmann Machine](https://www.cs.toronto.edu/~hinton/absps/fcrbm_icml.pdf)
+# Conditional Restricted Boltzmann Machine
 
-<img src="cost.png" width="300" alt="cost" /> <img src="prediction.png" width="400" alt="predicion" />
+See references.
 
-# Reference
+![cost](cost.png) ![prediction](prediction.png)
 
-[Modeling Human MotionUsing Binary Latent Variables](https://www.cs.toronto.edu/~hinton/absps/nipsmocap.pdf) by Graham W. Taylor, Geoffrey E. Hinton and Sam Roweis.
-
-[Factored Conditional Restricted Boltzmann Machines for Modeling Motion Style](https://www.cs.toronto.edu/~hinton/absps/fcrbm_icml.pdf) by Graham W. Taylor and Geoffrey E. Hinton.
-
-Forked from the [gist code](https://gist.github.com/gwtaylor/2505670) implemented by Graham W. Taylor. 
+This repository was forked from the [gist code](https://gist.github.com/gwtaylor/2505670) implemented by Graham W. Taylor. 
 
 ## Requirements
 
-- Theano-1.0.5
-    - conda install -c conda-forge theano==1.0.5
+- Theano
+
+# References
+
+- Taylor G.W., Hinton G.E., and Roweis S., *Modeling Human MotionUsing Binary Latent Variables*, **NIPS**, 2006.
+- Taylor G.W. and Hinton G.E., *Factored Conditional Restricted Boltzmann Machines for Modeling Motion Style*, **ICML**, 2009.
